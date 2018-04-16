@@ -1,36 +1,36 @@
 {
-  "name": "b24",
-  "version": "1.1.1",
-  "description": "Bitrix24 Client Library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "peana",
+  "version": "1.0.0",
+  "description": "ethereum-bitrix-bridge",
+  "main": "peana.ts",
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "tsc",
-    "test": "npm run build && ava ./tests/test.js"
+    "peana": "node ./src/peana.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/setyongr/b24.git"
+    "url": "git+https://github.com/freeworkculture/peana.git"
   },
   "keywords": [
-    "bitrix24"
+    "ethereum",
+    "blockchain",
+    "bitrix",
+    "protocol"
   ],
-  "author": "setyongr",
+  "author": "iamnot",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/setyongr/b24/issues"
+    "url": "https://github.com/freeworkculture/peana/issues"
   },
-  "homepage": "https://github.com/setyongr/b24#readme",
-  "devDependencies": {
-    "typescript": "^2.4.2",
-    "ava": "^0.22.0",
-    "nock": "^9.0.14"
-  },
+  "homepage": "https://github.com/freeworkculture/peana#readme",
   "dependencies": {
-    "@types/request-promise": "^4.1.36",
-    "dotenv": "^4.0.0",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1"
+    "b24": "^1.1.1",
+    "cote": "^0.16.2",
+    "ethers": "^3.0.9",
+    "express": "^4.16.3",
+    "node-ipc": "^9.1.1",
+    "requestify": "^0.2.5",
+    "run-middleware": "^0.6.6",
+    "simple-get": "^2.7.0",
+    "simple-oauth2": "^1.5.2"
   }
 }
