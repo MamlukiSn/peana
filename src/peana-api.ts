@@ -61,21 +61,14 @@ const bitrix24 = new b24.Bitrix24({
     }
 })
 
-// responder.on('api', async (req, res) => { // ideally, you would sanitize your input here.
+const oauth2 = require('simple-oauth2').create(credentials);
 
-//     console.log(`${req.ip} requested responder`);
-
-//     app.runMiddleware('/auth', function (code, body, headers) {
-//         if(code==301 || code==302) {// Redirect HTTP codes
-//             console.log('Redirect to:', headers.location)
-//         }
-//     })
-//     // app.runMiddleware('/auth',function(code,body,headers) {
-//     //     console.log('User Details:',body)
-//     // })
-
-// });
-
+// Authorization oauth2 URI
+const authorizationUri = oauth2.authorizationCode.authorizeURL({
+  redirect_uri: 'http://localhost:3000/callback',
+  scope: '<scope>', // also can be an array of multiple scopes, ex. ['<scope1>, '<scope2>', '...']
+  state: '<state>'
+});
 
 userResponder.on('api2', (req) => app.runMiddleware(req.path, {}, function(code, data, headers) {
     console.log(code) // 301
@@ -85,9 +78,11 @@ userResponder.on('api2', (req) => app.runMiddleware(req.path, {}, function(code,
 
 // Bitrix auth
 app.get('/auth', function(req, res, next) {
+
     console.log(`requested end-user interface`);
 
-    res.redirect(bitrix24.auth.authorization_uri);
+    // Redirect example using Express (see http://expressjs.com/api.html#res.redirect)
+    res.redirect(authorizationUri);
 
     console.log(`requested redirect`, bitrix24.auth.authorization_uri);
 
@@ -102,25 +97,28 @@ app.get('/auth', function(req, res, next) {
     else next()
 
 }, function (req, res, next) {
-    // render a regular page
+    
+    // Get the access token object (the authorization code is given from the previous step).
+    const tokenConfig = {
+        code: req,
+        redirect_uri: 'http://localhost:3000/callback',
+        scope: '<scope>', // also can be an array of multiple scopes, ex. ['<scope1>, '<scope2>', '...']
+    };
     console.log('Request Type:', req.method)
     next()
-})
 
-// Callback service parsing the authorization token and asking for the access token
-app.get('/callback', async (req, res) => {
+}, async function (req, res, next) {
+
+    console.log('Request Type:', req.method)
 
     console.log(`requested callback`);
 
-    try{
-        const code = req.query.code;
-        console.log('callback:', code);
-        const result = await bitrix24.auth.getToken(code);
-        console.log('callback result:', result);
-        return res.json(result);
-    }catch(err){
-        console.log('callback err:', err)
-        return res.status(500).json({message:"Authentication Failed"});
+    // Save the access token
+    try {
+        const result = await oauth2.authorizationCode.getToken(tokenConfig)
+        const accessToken = oauth2.accessToken.create(result);
+    } catch (error) {
+        console.log('Access Token Error', error.message);
     }
 });
 
